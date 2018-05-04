@@ -1,105 +1,110 @@
-#include <iostream>
 #include "XO.hpp"
 
-using namespace std;
-        
 XO::XO(){
-    
-    for(int i1 = 0; i1 < 3; i1++)
-       for(int i2 = 0; i2 < 3; i2++)
-           tabla[i1][i2] = {' '};
-    
+    for(int i = 0; i < 3; ++i){
+        for(int j = 0; j < 3; ++j){
+            tabla[i][j] = PRAZNO;
+        }
+    }
     igrac = IGRAC_X;
 }
 
-void XO::prikaziTablu() const{
-    
-    XO xo;
-    
-   cout << "-------------------" << endl;
-    cout << "|  " << xo.tabla[0][0] << "  | " << " " << "" << xo.tabla[0][1] << "  |" << " " << " " << xo.tabla[0][2] << "  |" << endl;
-    
-    cout << "-------------------" << endl;
-    cout << "|  " << xo.tabla[1][0] << "  |" << " " << " " << xo.tabla[1][1] << "  |" << " " << " " << xo.tabla[1][2] << "  |" << endl;
-    
-    cout << "-------------------" << endl;
-    cout << "|  " << xo.tabla[2][0] << "  |" << " " << " " << xo.tabla[2][1] << "  |" << " " << " " << xo.tabla[2][2] << "  |" << endl;
-    cout << "-------------------" << endl;
-    cout << endl;
-    
+int XO::getIgrac()const{
+    return igrac;
 }
 
-void XO::odigrajPotez() const{
-    
-    XO iksOks;
-    
-    string ig;
-    int polje;
-    char pom;
-    
-    if(iksOks.igrac == IGRAC_X)
-       ig = "X(iks)";
-    else
-       ig = "O(oks)";
-    
-    cout << endl;
-    cout << "Na potezu je igrac " << ig << endl;
-    cout << "Unesite poziciju za unos(1 do 9): " << endl << endl;
-    
-    cout << "-------------------" << endl;
-    cout << "|  1" << " " << " | " << " " << "2  |" << " " << " 3  |" << endl;
-    
-    cout << "-------------------" << endl;
-    cout << "|  4 " << " |" << " " << " 5  |" << " " << " 6  |" << endl;
-    
-    cout << "-------------------" << endl;
-    cout << "|  7 "  << " |" << " " << " 8  |" << " " << " 9  |" << endl;
-    cout << "-------------------" << endl;
-    cout << endl;
-    
-    cout << "Izaberite polje: ";
-    cin >> polje;
-    
-    if(iksOks.igrac == IGRAC_X)
-       pom = 'X';
-    else
-       pom = 'O';
-  
-    switch(polje){
-        case 1: iksOks.tabla[0][0] = pom;
-        break;
-       
-        case 2: iksOks.tabla[0][1] = pom;
-        break;
-        
-        case 3: iksOks.tabla[0][2] = pom;
-        break;
-        
-        case 4: iksOks.tabla[1][0] = pom;
-        break;
-        
-        case 5: iksOks.tabla[1][1] = pom;
-        break;
-       
-        case 6: iksOks.tabla[1][2] = pom;
-        break;
-           
-        case 7: iksOks.tabla[2][0] = pom;
-        break;
-    
-        case 8: iksOks.tabla[2][1] = pom;
-        break;
-        
-        case 9: iksOks.tabla[2][2] = pom;
-        break;
-  }
-        ++iksOks.igrac;
+void XO::odigrajPotez(int pozicija){
+
+    if(pozicija >= 1 || pozicija <= 9){
+        int traziPoziciju = 1;
+
+        int i, j;
+        for(i = 0; i < 3; ++i){
+            for(j = 0; j < 3; ++j){
+                if(traziPoziciju == pozicija){
+                    if(tabla[i][j] == IGRAC_X || tabla[i][j] == IGRAC_Y){
+                        cout << endl << "Izabrana pozicija je vec popunjena." << endl;
+                    }else{
+                        if(igrac == IGRAC_X){
+                            tabla[i][j] = IGRAC_X;
+                            igrac = IGRAC_Y;
+                        }else{
+                            tabla[i][j] = IGRAC_Y;
+                            igrac = IGRAC_X;
+                        }
+                    }
+                    i = KRAJ_IGRE;
+                    break;
+                }
+                traziPoziciju++;
+            }
+        }
+
+        cout << "Pobednik je: ";
+
+        if( // POBEDNIK JE X
+            (tabla[0][0] == 1 && tabla[0][1] == 1 && tabla[0][2] == 1)
+            ||
+            (tabla[0][0] == 1 && tabla[1][1] == 1 && tabla[2][2] == 1)
+            ||
+            (tabla[0][0] == 1 && tabla[1][0] == 1 && tabla[2][0] == 1)
+            ||
+            (tabla[0][1] == 1 && tabla[1][1] == 1 && tabla[2][1] == 1)
+            ||
+            (tabla[0][2] == 1 && tabla[1][2] == 1 && tabla[2][2] == 1)
+            ||
+            (tabla[1][0] == 1 && tabla[1][1] == 1 && tabla[1][2] == 1)
+            ||
+            (tabla[2][0] == 1 && tabla[1][1] == 1 && tabla[0][2] == 1)
+            ||
+            (tabla[2][0] == 1 && tabla[2][1] == 1 && tabla[2][2] == 1)
+            ){
+                cout << "IGRAC 1 - X (iks)\n\n" << endl;
+                igrac = KRAJ_IGRE;
+        }else if( // POBEDNIK JE O
+            (tabla[0][0] == 2 && tabla[0][1] == 2 && tabla[0][2] == 2)
+            ||
+            (tabla[0][0] == 2 && tabla[1][1] == 2 && tabla[2][2] == 2)
+            ||
+            (tabla[0][0] == 2 && tabla[1][0] == 2 && tabla[2][0] == 2)
+            ||
+            (tabla[0][1] == 2 && tabla[1][1] == 2 && tabla[2][1] == 2)
+            ||
+            (tabla[0][2] == 2 && tabla[1][2] == 2 && tabla[2][2] == 2)
+            ||
+            (tabla[1][0] == 2 && tabla[1][1] == 2 && tabla[1][2] == 2)
+            ||
+            (tabla[2][0] == 2 && tabla[1][1] == 2 && tabla[0][2] == 2)
+            ||
+            (tabla[2][0] == 2 && tabla[2][1] == 2 && tabla[2][2] == 2)
+            ){
+                cout << "IGRAC 2 - O (oks)\n\n" << endl;
+                igrac = KRAJ_IGRE;
+            }else{
+                cout << " Nema pobednika.\n\n" << endl;
+            }
+    }
+}
+
+void XO::prikaziTablu() const{
+    for(int i = 0; i < 3; ++i){
+        cout << "\t-------------\n\t";
+        for(int j = 0; j < 3; ++j){
+            cout << "| ";
+            if(tabla[i][j] == PRAZNO){
+                cout << " ";
+            }else if(tabla[i][j] == IGRAC_X){
+                cout << "X";
+            }else if(tabla[i][j] == IGRAC_Y){
+                cout << "O";
+            }
+            cout << " ";
+        }
+        cout << "|" << endl;
+    }
+    cout << "\t-------------\n\n";
 }
 
 bool XO::kraj() const{
-    if(igrac == KRAJ_IGRE)
-      return true;
-    else
-      return false;
-
+    return igrac == KRAJ_IGRE;
 }
